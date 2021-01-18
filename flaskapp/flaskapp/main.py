@@ -17,7 +17,7 @@ from flask_login import logout_user
 from flask_login import login_required
 from flask_cors import CORS, cross_origin
 
-
+### MUST HAVE PyJWT==1.7.1 INSTALLED, NOT ANY NEW VERSION!!!
 @app.route("/")
 @app.route("/home")
 def home():
@@ -33,8 +33,6 @@ def about():
 @cross_origin(origin='*')
 
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
     
     hashed_password = bcrypt.generate_password_hash(request.headers.get('password')).decode('utf-8')
     user = User(username=request.headers.get('username'), email=request.headers.get('email'), password=hashed_password)
@@ -58,30 +56,35 @@ def register():
 
     #Generate JWT for authentication
     auth_token = user.encode_auth_token(user.id)
-    print(auth_token)
-
-    
-    responseObject = {
-                    'status': 'success',
-                    'message': 'Successfully registered.',
-                    'auth_token': auth_token.decode_auth_token(auth_token)
-                }
+    if auth_token:
+        responseObject = {
+                     'status': 'success',
+                     'message': 'Successfully registered.',
+                     'auth_token': auth_token.decode()
+                    }
     return make_response(jsonify(responseObject)), 201
 
 @app.route("/login", methods=['GET', 'POST'])
 @cross_origin(origin='*')
 
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
     
     user = User.query.filter_by(email=request.headers.get('email')).first()
-    print(user)
     if user and bcrypt.check_password_hash(user.password, request.headers.get('password')):
-        return jsonify(goodReturn='good')
-    
-    return jsonify(badReturn='bad')
-
+        auth_token = user.encode_auth_token(user.id)
+        if auth_token:
+            responseObject = {
+                     'status': 'success',
+                     'message': 'Successfully registered.',
+                     'auth_token': auth_token.decode()
+                    }
+        return make_response(jsonify(responseObject)), 201
+    else:
+        responseObject = {
+                'status': 'failure',
+                'message': 'Email or password are incorrect',
+            }
+        return make_response(jsonify(responseObject)), 202
 
 @app.route("/logout")
 def logout():
@@ -94,9 +97,211 @@ def logout():
 def account():
     return render_template('account.html', title='Account')
 
-#@app.route("/register-device")
-#@login_required
-#def register_device():
-#    form = RegistrationForm()
-#    if form.validate_on_submit():
-#        device = Device()
+
+@app.route("/pictures", methods=['GET', 'POST'])
+@cross_origin(origin='http://localhost:3000/main/homePage', headers=['Content- Type','Authorization'])
+def pictures():
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+            auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+    if auth_token:
+        resp = User.decode_auth_token(auth_token)
+        if not isinstance(resp, str):
+            responseObject = {
+                'status': 'success',
+                'images': [
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                },{
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                },{
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                },{
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                }
+            ]
+            }
+            return make_response(jsonify(responseObject)), 200
+        responseObject = {
+            'status': 'failure',
+            'message': 'Expired token'
+        }
+        return make_response(jsonify(responseObject)), 401
+    else:
+        responseObject = {
+            'status': 'failure',
+            'message': 'Provide a valid auth token.'
+        }
+    return make_response(jsonify(responseObject)), 401
+    
+
+@app.route("/register-device", methods=['GET', 'POST'])
+@cross_origin(origin='http://localhost:3000/main/devicesPage', headers=['Content- Type','Authorization'])
+def registerDevice():
+    auth_header = request.headers.get('Authorization')
+    serial_id = request.headers.get('serial-id')
+
+
+    if auth_header:
+            auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+    if auth_token:
+        resp = User.decode_auth_token(auth_token)
+        user = User.query.filter(User.id == resp.get('sub')).first()
+        setattr(user, 'serialId', serial_id)
+        db.session.commit()
+
+
+
+        #user = User.query.filter_by(id=resp.get('sub')).update({'serialId': serial_id})
+
+        if not isinstance(resp, str):
+            responseObject = {
+                'status': 'success',
+                'message': 'successfully registered the camera!'}
+            return make_response(jsonify(responseObject)), 200
+        responseObject = {
+            'status': 'failure',
+            'message': 'Expired token'
+        }
+        return make_response(jsonify(responseObject)), 401
+    else:
+        responseObject = {
+            'status': 'failure',
+            'message': 'Provide a valid auth token.'
+        }
+    return make_response(jsonify(responseObject)), 401
+
+

@@ -1,8 +1,9 @@
-from datetime import datetime
+import datetime
 from flaskapp import db
 from flaskapp import login_manager
 from flask_login import UserMixin
 import jwt
+from flaskapp import app
 
 
 @login_manager.user_loader
@@ -15,6 +16,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)  
     password = db.Column(db.String(60), nullable=False)
+    serialId = db.Column(db.String(60), nullable=True)
   
 
     def __repr__(self):
@@ -27,7 +29,7 @@ class User(db.Model, UserMixin):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, hours=1, seconds=5),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, hours=1, minutes=1, seconds=5),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
@@ -38,7 +40,7 @@ class User(db.Model, UserMixin):
             )
         except Exception as e:
             return e
-            
+
     @staticmethod
     def decode_auth_token(auth_token):
         """
@@ -48,7 +50,7 @@ class User(db.Model, UserMixin):
         """
         try:
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
-            return payload['sub']
+            return payload
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
