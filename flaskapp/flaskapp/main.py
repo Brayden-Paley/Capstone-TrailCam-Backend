@@ -11,6 +11,7 @@ from flaskapp import bcrypt
 from flaskapp.form import RegistrationForm
 from flaskapp.form import LoginForm
 from flaskapp.tables import User
+from flaskapp.tables import Image
 from flask_login import login_user 
 from flask_login import current_user
 from flask_login import logout_user 
@@ -66,10 +67,9 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 @cross_origin(origin='*')
-
 def login():
-    
     user = User.query.filter_by(email=request.headers.get('email')).first()
+    print(user.id)
     if user and bcrypt.check_password_hash(user.password, request.headers.get('password')):
         auth_token = user.encode_auth_token(user.id)
         if auth_token:
@@ -98,8 +98,50 @@ def account():
     return render_template('account.html', title='Account')
 
 
-@app.route("/pictures", methods=['GET', 'POST'])
-@cross_origin(origin='http://localhost:3000/main/homePage', headers=['Content- Type','Authorization'])
+@app.route("/new-pictures", methods=['GET', 'POST'])
+@cross_origin(origin='*')
+def newImages():
+    auth_header = request.headers.get('Authorization')
+   
+    if auth_header:
+        auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+    if auth_token:
+        resp = User.decode_auth_token(auth_token)
+        userId = resp.get('sub')
+
+        if not isinstance(resp, str):
+            respImages = []
+            for image in Image.query.filter(Image.cameraId == userId).all():
+                image.seen = True
+                tempJsonImage = {
+                    'img' : image.filepath + image.filename,
+                    'title' : image.filename,
+                    'author' : ""
+                }
+                respImages.append(tempJsonImage)
+
+            responseObject = {
+                'status': 'success',
+                'images': respImages
+            }
+            return make_response(jsonify(responseObject)), 200
+        responseObject = {
+            'status': 'failure',
+            'message': 'Expired token'
+        }
+        return make_response(jsonify(responseObject)), 401
+    else:
+        responseObject = {
+            'status': 'failure',
+            'message': 'Provide a valid auth token.'
+        }
+        return make_response(jsonify(responseObject)), 401
+
+
+@app.route("/all-pictures", methods=['GET', 'POST'])
+@cross_origin(origin='*', headers=['Content- Type','Authorization'])
 def pictures():
     auth_header = request.headers.get('Authorization')
 
@@ -109,148 +151,20 @@ def pictures():
         auth_token = ''
     if auth_token:
         resp = User.decode_auth_token(auth_token)
+        userId = resp.get('sub')
         if not isinstance(resp, str):
+            
+            respImages = []
+            for image in Image.query.filter(Image.cameraId == userId).all():
+                tempJsonImage = {
+                    'img' : image.filepath + image.filename,
+                    'title' : image.filename,
+                    'author' : ""
+                }
+                respImages.append(tempJsonImage)
             responseObject = {
                 'status': 'success',
-                'images': [
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image11',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image2',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image3',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image4',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image5',
-                'author': 'author',
-                },
-                {   
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image6',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image7',
-                'author': 'author',
-                },{
-                'img': '/images/profile.jpeg',
-                'title': 'Image11',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image2',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image3',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image4',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image5',
-                'author': 'author',
-                },
-                {   
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image6',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image7',
-                'author': 'author',
-                },{
-                'img': '/images/profile.jpeg',
-                'title': 'Image11',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image2',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image3',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image4',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image5',
-                'author': 'author',
-                },
-                {   
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image6',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image7',
-                'author': 'author',
-                },{
-                'img': '/images/profile.jpeg',
-                'title': 'Image11',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image2',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image3',
-                'author': 'author',
-                },
-                {
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image4',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image5',
-                'author': 'author',
-                },
-                {   
-                'img': '/images/testPic2.jpeg',
-                'title': 'Image6',
-                'author': 'author',
-                },
-                {
-                'img': '/images/profile.jpeg',
-                'title': 'Image7',
-                'author': 'author',
-                }
-            ]
+                'images': respImages
             }
             return make_response(jsonify(responseObject)), 200
         responseObject = {
@@ -267,7 +181,7 @@ def pictures():
     
 
 @app.route("/register-device", methods=['GET', 'POST'])
-@cross_origin(origin='http://localhost:3000/main/devicesPage', headers=['Content- Type','Authorization'])
+@cross_origin(origin='*', headers=['Content- Type','Authorization'])
 def registerDevice():
     auth_header = request.headers.get('Authorization')
     serial_id = request.headers.get('serial-id')
@@ -282,7 +196,7 @@ def registerDevice():
         user = User.query.filter(User.id == resp.get('sub')).first()
         setattr(user, 'serialId', serial_id)
         db.session.commit()
-
+        
 
 
         #user = User.query.filter_by(id=resp.get('sub')).update({'serialId': serial_id})
@@ -303,5 +217,3 @@ def registerDevice():
             'message': 'Provide a valid auth token.'
         }
     return make_response(jsonify(responseObject)), 401
-
-

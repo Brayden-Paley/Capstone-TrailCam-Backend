@@ -4,11 +4,23 @@ from flaskapp import login_manager
 from flask_login import UserMixin
 import jwt
 from flaskapp import app
+import json
+
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    filename = db.Column(db.String(264), unique=True, nullable=False)
+    filepath = db.Column(db.String(264), unique=True, nullable=False)
+    seen = db.Column(db.Boolean, default=False, nullable=False)
+    cameraId = db.Column(db.Integer, nullable=False)
+	
+    def __repr__(self):
+        return f"Image('{self.filename}', '{self.seen}')"
 
 
 class User(db.Model, UserMixin):
@@ -17,7 +29,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)  
     password = db.Column(db.String(60), nullable=False)
     serialId = db.Column(db.String(60), nullable=True)
-  
+    
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
