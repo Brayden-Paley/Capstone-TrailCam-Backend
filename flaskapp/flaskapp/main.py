@@ -141,7 +141,7 @@ def newImages():
 
 
 @app.route("/all-pictures", methods=['GET', 'POST'])
-@cross_origin(origin='*', headers=['Content- Type','Authorization'])
+@cross_origin(origin='http://localhost:3000/main/homePage', headers=['Content- Type','Authorization'])
 def pictures():
     auth_header = request.headers.get('Authorization')
 
@@ -154,19 +154,161 @@ def pictures():
         userId = resp.get('sub')
         if not isinstance(resp, str):
             
-            respImages = []
-            for image in Image.query.filter(Image.cameraId == userId).all():
-                tempJsonImage = {
-                    'img' : image.filepath + image.filename,
-                    'title' : image.filename,
-                    'author' : ""
-                }
-                respImages.append(tempJsonImage)
+            #respImages = []
+            #for image in Image.query.filter(Image.cameraId == userId).all():
+            #    tempJsonImage = {
+            #        'img' : image.filepath + image.filename,
+            #        'title' : image.filename,
+            #        'author' : ""
+            #    }
+                #respImages.append(tempJsonImage)
             responseObject = {
                 'status': 'success',
-                'images': respImages
+                'images': [
+                {
+                'img': '/images/BunnyAtNight.jpg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/PersonPicture.jpg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/4.jpg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                },{
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                },{
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                },{
+                'img': '/images/profile.jpeg',
+                'title': 'Image11',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image2',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image3',
+                'author': 'author',
+                },
+                {
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image4',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image5',
+                'author': 'author',
+                },
+                {   
+                'img': '/images/testPic2.jpeg',
+                'title': 'Image6',
+                'author': 'author',
+                },
+                {
+                'img': '/images/profile.jpeg',
+                'title': 'Image7',
+                'author': 'author',
+                }
+            ]
             }
-            return make_response(jsonify(responseObject)), 200
+            #responseObject = {
+            #    'status': 'success',
+            #    'images': respImages
+            #}
+        return make_response(jsonify(responseObject)), 200
         responseObject = {
             'status': 'failure',
             'message': 'Expired token'
