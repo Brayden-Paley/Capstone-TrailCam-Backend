@@ -15,11 +15,7 @@ def load_user(user_id):
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     filename = db.Column(db.String(264), unique=True, nullable=False)
-<<<<<<< HEAD
-    filepath = db.Column(db.String(264), nullable=False)
-=======
     filepath = db.Column(db.String(264), unique=False, nullable=False)
->>>>>>> 52c0ad9c36c871e452ddfa9b62f2e37ce1045d25
     seen = db.Column(db.Boolean, default=False, nullable=False)
     cameraId = db.Column(db.Integer, nullable=False)
 	
