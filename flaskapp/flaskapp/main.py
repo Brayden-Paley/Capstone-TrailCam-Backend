@@ -156,7 +156,7 @@ def pictures():
             respImages = []
             for image in Image.query.filter(Image.cameraId == userId).all():
                tempJsonImage = {
-                   'img' : image.filepath + image.filename,
+                   'img' : '/' + image.filepath + image.filename,
                    'title' : image.filename,
                    'author' : ""
                }
