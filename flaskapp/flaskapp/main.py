@@ -162,6 +162,15 @@ def pictures():
             #        'author' : ""
             #    }
                 #respImages.append(tempJsonImage)
+            respImages = []
+            for image in Image.query.filter(Image.cameraId == userId).all():
+                tempJsonImage = {
+                        'img' :"/" + image.filepath + image.filename,
+                    'title' : image.filename,
+                    'author' : ""
+                }
+                respImages.append(tempJsonImage)
+            print(respImages)
             responseObject = {
                 'status': 'success',
                 'images': [
