@@ -8,7 +8,7 @@ from sqlalchemy.sql import text
 import string
 
 class Watcher:
-    DIRECTORY_TO_WATCH = "."
+    DIRECTORY_TO_WATCH = "/var/hello"
 
     def __init__(self):
         self.observer = Observer()
@@ -43,7 +43,9 @@ class Handler(FileSystemEventHandler):
             stringholder = string.ascii_letters + string.digits
             pos = next(i for i, x in enumerate(event.src_path) if x in stringholder)
             name = event.src_path[pos:]
-            name = name.split(".")[0]
+            #name = name.split(".")[0]
+            name =name.split("/")
+            name = name[len(name)-1]
             str3 = '\'%s\''% name
             name = str3
             print(name)
@@ -52,7 +54,13 @@ class Handler(FileSystemEventHandler):
                 print(exists)
                 if (not exists):
                     name = name.split("'")[1]
-                    new_file = Image(filename=name, filepath=os.path.abspath(event.src_path), cameraID = '1')
+                
+                    filep =os.path.relpath(event.src_path,start = '/var/hello/Capstone-Trail-Cam/public').split("/")
+                    filep = filep[0:len(filep) -1]
+                    filep = '/'.join(filep)
+                    filep = filep + '/'
+                    print(filep)
+                    new_file = Image(filename=name, filepath=filep, cameraId = '1')
                     db.session.add(new_file)
                     db.session.commit()
                     print(Image.query.all())
