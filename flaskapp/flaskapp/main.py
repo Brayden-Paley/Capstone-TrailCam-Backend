@@ -113,10 +113,10 @@ def newImages():
 
         if not isinstance(resp, str):
             respImages = []
-            for image in Image.query.filter(Image.cameraId == userId).all():
+            for image in Image.query.filter(Image.cameraId == userId and Image.seen == False).all():
                 image.seen = True
                 tempJsonImage = {
-                    'img' : image.filepath + image.filename,
+                    'img' : '/' + image.filepath + image.filename,
                     'title' : image.filename,
                     'author' : ""
                 }
@@ -155,12 +155,12 @@ def pictures():
         if not isinstance(resp, str):
             respImages = []
             for image in Image.query.filter(Image.cameraId == userId).all():
-               tempJsonImage = {
-                   'img' : '/' + image.filepath + image.filename,
-                   'title' : image.filename,
-                   'author' : ""
-               }
-            respImages.append(tempJsonImage)
+                tempJsonImage = {
+                    'img' : '/' + image.filepath + image.filename,
+                    'title' : image.filename,
+                    'author' : ""
+                }
+                respImages.append(tempJsonImage)
             responseObject = {
                'status': 'success',
                'images': respImages
